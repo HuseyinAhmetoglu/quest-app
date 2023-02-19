@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Post from "../Post/Post";
-import Container from "@mui/material/Container";
-import Box from "@mui/material/Box";
 import "./Home.css";
+import PostForm from "../Post/PostForm";
 
 function Home() {
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [postList, setPostList] = useState([]);
 
-  useEffect(() => {
+  const refreshPost = () => {
     fetch("/posts")
       .then((res) => res.json())
       .then(
@@ -18,11 +17,16 @@ function Home() {
           setPostList(result);
         },
         (error) => {
+          console.log(error);
           setIsLoaded(true);
           setError(error);
         }
       );
-  }, []);
+  };
+
+  useEffect(() => {
+    refreshPost();
+  }, [postList]);
 
   if (error) {
     return <div> Error!!!</div>;
@@ -30,11 +34,19 @@ function Home() {
     return <div>Loading...</div>;
   } else {
     return (
-      <Container fixed className="homeContainer">
-          {postList.map((post) => (
-            <Post userId = {post.userId} userName = {post.userName} title={post.title} text={post.text}></Post>
-          ))}
-      </Container>
+      <div className="homeContainer">
+        <PostForm userId={1} userName={""} refreshPost={refreshPost}></PostForm>
+        {postList.map((post) => (
+          <Post
+            postId={post.id}
+            userId={post.userId}
+            userName={post.userName}
+            title={post.title}
+            text={post.text}
+            likes={post.likes}
+          ></Post>
+        ))}
+      </div>
     );
   }
 }
