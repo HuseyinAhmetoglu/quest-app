@@ -7,19 +7,15 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import Collapse from "@mui/material/Collapse";
 import Avatar from "@mui/material/Avatar";
-import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Container from "@mui/material/Container";
 import Comment from "../Comment/Comment";
 import CommentIcon from "@mui/icons-material/Comment";
 import CommentForm from "../Comment/CommentForm";
+import IconButton from '@mui/material/IconButton';
 
-interface ExpandMoreProps extends IconButtonProps {
-  expand: boolean;
-}
-
-const ExpandMore = styled((props: ExpandMoreProps) => {
+const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
   return <IconButton {...other} />;
 })(({ theme, expand }) => ({
@@ -91,8 +87,7 @@ export default function Post(props) {
   const deleteLike = () => {
     fetch("/likes/" + likeId, {
       method: "DELETE",
-    })
-      .catch((err) => console.log(err));
+    }).catch((err) => console.log(err));
   };
 
   const checkLikes = () => {
