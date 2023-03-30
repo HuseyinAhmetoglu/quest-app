@@ -1,9 +1,13 @@
-import React from 'react'
-import { useParams } from 'react-router-dom'
+import React from "react";
+import { useParams } from "react-router-dom";
+import Avatar from "../Avatar/Avatar";
 
 export default function User() {
-    const {userId} = useParams();
+  const { userId } = useParams();
   return (
-    <div>User!! {userId}</div>
-  )
+    <div>
+      User!! {userId}
+      <Avatar avatarId = {0}/>
+    </div>
+  );
 }

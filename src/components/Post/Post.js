@@ -14,6 +14,7 @@ import Comment from "../Comment/Comment";
 import CommentIcon from "@mui/icons-material/Comment";
 import CommentForm from "../Comment/CommentForm";
 import IconButton from "@mui/material/IconButton";
+import { PostWithAuth } from "../../services/HttpService";
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -36,6 +37,7 @@ export default function Post(props) {
   const isInitialMount = useRef(true);
   const [likeCount, setLikeCount] = useState(likes.length);
   const [likeId, setLikedId] = useState(null);
+  let disabled = localStorage.getItem("currentUser") == null ? true : false;
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -70,15 +72,9 @@ export default function Post(props) {
   };
 
   const saveLike = () => {
-    fetch("/likes", {
-      method: "POST",
-      headers: {
-        "content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        postId: postId,
-        userId: userId,
-      }),
+    PostWithAuth("/likes", {
+      postId: postId,
+      userId: localStorage.getItem("currentUser"),
     })
       .then((res) => res.json())
       .catch((err) => console.log(err));
@@ -87,11 +83,16 @@ export default function Post(props) {
   const deleteLike = () => {
     fetch("/likes/" + likeId, {
       method: "DELETE",
+      headers: {
+        Authorization: localStorage.getItem("tokenKey"),
+      },
     }).catch((err) => console.log(err));
   };
 
   const checkLikes = () => {
-    var likeControl = likes.find((like) => like.userId === userId);
+    var likeControl = likes.find(
+      (like) => "" + like.userId === localStorage.getItem("currentUser")
+    );
     if (likeControl != null) {
       setLikedId(likeControl.id);
       setIsLiked(true);
@@ -104,7 +105,7 @@ export default function Post(props) {
     } else {
       refreshComments();
     }
-  }, [commentList]);
+  }, []);
 
   useEffect(() => {
     checkLikes();
@@ -131,7 +132,11 @@ export default function Post(props) {
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites" onClick={handleLike}>
+        <IconButton
+          disabled={disabled}
+          aria-label="add to favorites"
+          onClick={handleLike}
+        >
           <FavoriteIcon style={isliked ? { color: "red" } : null} />
         </IconButton>
         {likeCount}
@@ -152,16 +157,21 @@ export default function Post(props) {
             ? commentList.map((comment) => (
                 <Comment
                   userId={1}
-                  userName={"USER"}
+                  userName={"comment.userName"}
                   text={comment.text}
                 ></Comment>
               ))
             : "Loading"}
-          <CommentForm
-            userId={1}
-            userName={"USER"}
-            postId={postId}
-          ></CommentForm>
+
+          {disabled == null ? (
+            ""
+          ) : (
+            <CommentForm
+              userId={localStorage.getItem("currentUser")}
+              userName={localStorage.getItem("userName")}
+              postId={postId}
+            ></CommentForm>
+          )}
         </Container>
       </Collapse>
     </Card>
