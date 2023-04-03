@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { PostWithAuth } from "../../services/HttpService";
+import { PostWithoutAuth } from "../../services/HttpService";
 import { useState } from "react";
 
 function Auth() {
@@ -27,11 +27,11 @@ function Auth() {
     sendRequest(path);
     setUsername("");
     setPassword("");
-    navigate("/");
+    //navigate("/");
   };
 
   const sendRequest = (path) => {
-    PostWithAuth("/auth/" + path, {
+    PostWithoutAuth("/auth/" + path, {
       userName: username,
       password: password,
     })

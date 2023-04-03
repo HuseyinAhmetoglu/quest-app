@@ -10,32 +10,27 @@ import Button from "@mui/material/Button";
 import { InputAdornment } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
+import { PostWithAuth } from "../../services/HttpService";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
 export default function PostForm(props) {
-  const { userId, userName, refreshPost } = props;
+  const { userId, userName, setPostRefresh } = props;
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [isSent, setIsSent] = useState(false);
 
   const savePost = () => {
-    fetch("/posts", {
-      method: "POST",
-      headers: {
-        "content-Type": "application/json",
-        Authorization: localStorage.getItem("tokenKey"),
-      },
-      body: JSON.stringify({
-        title: title,
-        userId: userId,
-        text: text,
-      }),
+    PostWithAuth("/posts", {
+      title: title,
+      userId: userId,
+      text: text,
     })
       .then((res) => res.json())
       .catch((err) => console.log("error"));
+    setPostRefresh();
   };
 
   const handleSubmit = () => {
@@ -43,7 +38,6 @@ export default function PostForm(props) {
     setIsSent(true);
     setTitle("");
     setText("");
-    refreshPost();
   };
 
   const handleTitle = (value) => {

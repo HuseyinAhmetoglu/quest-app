@@ -14,7 +14,7 @@ import Comment from "../Comment/Comment";
 import CommentIcon from "@mui/icons-material/Comment";
 import CommentForm from "../Comment/CommentForm";
 import IconButton from "@mui/material/IconButton";
-import { PostWithAuth } from "../../services/HttpService";
+import { DeleteWithAuth, PostWithAuth } from "../../services/HttpService";
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -30,14 +30,18 @@ const ExpandMore = styled((props) => {
 export default function Post(props) {
   const { userId, userName, title, text, postId, likes } = props;
   const [expanded, setExpanded] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [commentList, setCommentList] = useState([]);
   const [error, setError] = useState(null);
   const [isliked, setIsLiked] = useState(false);
   const isInitialMount = useRef(true);
   const [likeCount, setLikeCount] = useState(likes.length);
   const [likeId, setLikedId] = useState(null);
+  const [refresh, setRefresh] = useState(false);
   let disabled = localStorage.getItem("currentUser") == null ? true : false;
+
+  const setCommentRefresh = () => {
+    setRefresh(true);
+  };
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -60,15 +64,14 @@ export default function Post(props) {
       .then((res) => res.json())
       .then(
         (result) => {
-          setIsLoaded(true);
           setCommentList(result);
         },
         (error) => {
           console.log(error);
-          setIsLoaded(true);
           setError(error);
         }
       );
+    setRefresh(false);
   };
 
   const saveLike = () => {
@@ -81,12 +84,7 @@ export default function Post(props) {
   };
 
   const deleteLike = () => {
-    fetch("/likes/" + likeId, {
-      method: "DELETE",
-      headers: {
-        Authorization: localStorage.getItem("tokenKey"),
-      },
-    }).catch((err) => console.log(err));
+    DeleteWithAuth("/likes/" + likeId).catch((err) => console.log(err));
   };
 
   const checkLikes = () => {
@@ -100,12 +98,9 @@ export default function Post(props) {
   };
 
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-    } else {
-      refreshComments();
-    }
-  }, []);
+    if (isInitialMount.current) isInitialMount.current = false;
+    else refreshComments();
+  }, [refresh]);
 
   useEffect(() => {
     checkLikes();
@@ -153,15 +148,13 @@ export default function Post(props) {
         <Container fixed>
           {error
             ? "error"
-            : isLoaded
-            ? commentList.map((comment) => (
+            : commentList.map((comment) => (
                 <Comment
                   userId={1}
                   userName={"comment.userName"}
                   text={comment.text}
                 ></Comment>
-              ))
-            : "Loading"}
+              ))}
 
           {disabled == null ? (
             ""
@@ -170,6 +163,7 @@ export default function Post(props) {
               userId={localStorage.getItem("currentUser")}
               userName={localStorage.getItem("userName")}
               postId={postId}
+              setCommentRefresh={setCommentRefresh}
             ></CommentForm>
           )}
         </Container>

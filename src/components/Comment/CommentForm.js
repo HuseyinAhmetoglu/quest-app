@@ -7,30 +7,21 @@ import {
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
+import { PostWithAuth } from "../../services/HttpService";
 
 export default function CommentForm(props) {
-  const { postId, userId, userName } = props;
+  const { postId, userId, userName, setCommentRefresh } = props;
   const [text, setText] = useState("");
 
   const saveComment = () => {
-    console.log(postId);
-    console.log(userId);
-    console.log(text);
-
-    fetch("/comments", {
-      method: "POST",
-      headers: {
-        "content-Type": "application/json",
-        Authorization: localStorage.getItem("tokenKey"),
-      },
-      body: JSON.stringify({
-        postId: postId,
-        userId: userId,
-        text: text,
-      }),
+    PostWithAuth("/comments", {
+      postId: postId,
+      userId: userId,
+      text: text,
     })
       .then((res) => res.json())
       .catch((err) => console.log(err));
+    setCommentRefresh();
   };
 
   const handleChange = (value) => {

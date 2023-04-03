@@ -12,6 +12,7 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import "./Avatar.css";
 import { ListItemSecondaryAction, Radio } from "@mui/material";
+import { PutWithAuth } from "../../services/HttpService";
 
 const style = {
   position: "absolute",
@@ -27,10 +28,21 @@ const style = {
 export default function Avatar(props) {
   const { avatarId } = props;
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const [selectedValue, setSelectedValue] = useState(0);
 
+  const [selectedValue, setSelectedValue] = useState(avatarId);
+
+  const saveAvatar = () => {
+    PutWithAuth("/users/" + localStorage.getItem("currentUser"), {
+      avatar: selectedValue,
+    })
+      .then((res) => res.json())
+      .catch((err) => console.log(err));
+  };
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    setOpen(false);
+    saveAvatar();
+  };
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
   };
@@ -39,7 +51,7 @@ export default function Avatar(props) {
       <Card sx={{ maxWidth: 400 }}>
         <CardMedia
           sx={{ height: 400, width: 400 }}
-          image={`/image/avatar${avatarId}.png`}
+          image={`/image/avatar${selectedValue}.png`}
           title="User Avatar"
         />
         <CardContent>

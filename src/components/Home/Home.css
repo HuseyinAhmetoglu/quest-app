@@ -1,8 +1,9 @@
-.homeContainer{
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    background-color: #f4fbff;
-    padding: 10px;
+.homeContainer {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  background-color: #f4fbff;
+  padding: 10px;
 }

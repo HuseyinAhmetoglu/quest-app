@@ -5,33 +5,34 @@ import PostForm from "../Post/PostForm";
 
 function Home() {
   const [error, setError] = useState(null);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [postList, setPostList] = useState([]);
+  const [refresh, setRefresh] = useState(false);
 
-  const refreshPost = () => {
+  const setPostRefresh = () => {
+    setRefresh(true);
+  };
+
+  const refreshPosts = () => {
     fetch("/posts")
       .then((res) => res.json())
       .then(
         (result) => {
-          setIsLoaded(true);
           setPostList(result);
         },
         (error) => {
           console.log(error);
-          setIsLoaded(true);
           setError(error);
         }
       );
+    setRefresh(false);
   };
 
   useEffect(() => {
-    refreshPost();
-  }, []);
+    refreshPosts();
+  }, [refresh]);
 
   if (error) {
-    return <div> Error!!!</div>;
-  } else if (!isLoaded) {
-    return <div>Loading...</div>;
+    return <div> Error !!!</div>;
   } else {
     return (
       <div className="homeContainer">
@@ -41,18 +42,17 @@ function Home() {
           <PostForm
             userId={localStorage.getItem("currentUser")}
             userName={localStorage.getItem("userName")}
-            refreshPost={refreshPost}
-          ></PostForm>
+            setPostRefresh={setPostRefresh}
+          />
         )}
-
         {postList.map((post) => (
           <Post
+            likes={post.likes}
             postId={post.id}
             userId={post.userId}
             userName={post.userName}
             title={post.title}
             text={post.text}
-            likes={post.likes}
           ></Post>
         ))}
       </div>

@@ -11,6 +11,18 @@ export const PostWithAuth = (url, body) => {
   return request;
 };
 
+export const PostWithoutAuth = (url, body) => {
+  var request = fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  return request;
+};
+
 export const PutWithAuth = (url, body) => {
   var request = fetch(url, {
     method: "PUT",
@@ -36,7 +48,7 @@ export const GetWithAuth = (url) => {
   return request;
 };
 
-export const DeleteWithAuth = (url, body) => {
+export const DeleteWithAuth = (url) => {
   var request = fetch(url, {
     method: "DELETE",
     headers: {
@@ -45,5 +57,19 @@ export const DeleteWithAuth = (url, body) => {
     },
   });
 
+  return request;
+};
+
+export const RefreshToken = () => {
+  var request = fetch("/api/auth/refresh", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      userId: localStorage.getItem("currentUser"),
+      refreshToken: localStorage.getItem("refreshKey"),
+    }),
+  });
   return request;
 };
