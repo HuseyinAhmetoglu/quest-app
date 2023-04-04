@@ -150,8 +150,8 @@ export default function Post(props) {
             ? "error"
             : commentList.map((comment) => (
                 <Comment
-                  userId={1}
-                  userName={"comment.userName"}
+                  userId={comment.userId}
+                  userName={comment.userName}
                   text={comment.text}
                 ></Comment>
               ))}

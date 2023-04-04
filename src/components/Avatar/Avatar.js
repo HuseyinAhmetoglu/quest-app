@@ -26,7 +26,7 @@ const style = {
   p: 4,
 };
 export default function Avatar(props) {
-  const { avatarId } = props;
+  const { avatarId, userId, userName } = props;
   const [open, setOpen] = useState(false);
 
   const [selectedValue, setSelectedValue] = useState(avatarId);
@@ -56,14 +56,18 @@ export default function Avatar(props) {
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            Username
+            {userName}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             User info
           </Typography>
         </CardContent>
         <CardActions>
-          <Button onClick={handleOpen}>Change Avatar</Button>
+          {localStorage.getItem("currentUser") === userId ? (
+            <Button onClick={handleOpen}>Change Avatar</Button>
+          ) : (
+            ""
+          )}
         </CardActions>
       </Card>
       <Modal

@@ -37,7 +37,7 @@ export default function User() {
       ) : (
         ""
       )}
-      {localStorage.getItem("currentUser") == userId ? (
+      {localStorage.getItem("currentUser") === userId ? (
         <UserActivity userId={userId} />
       ) : (
         ""
